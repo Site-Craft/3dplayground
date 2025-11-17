@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whimsical World of 3D Art</title>
+  <!-- Load Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Load Model Viewer -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
+
+  <style>
+    /* Use Inter font for a modern, friendly look */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* --- CARTOON NEUMORPHISM BASE STYLE --- */
+    /* This style applies the thick border and offset shadow to create the hand-drawn 3D lift */
+    .cartoon-card {
+      border: 4px solid #000;
+      border-radius: 16px; 
+      box-shadow: 6px 6px 0px #000; 
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    /* Optional: A small "pop" effect on hover for playfulness */
+    .cartoon-card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 8px 8px 0px #000;
+    }
+    
+    /* Specific style for the 3D viewer */
+    model-viewer {
+      width: 100%;
+      height: 550px;
+      margin: 0 auto;
+      --rotation-per-second: 8deg; 
+      /* Apply the cartoon style */
+      background-color: #FFEC9C; /* Yellow background */
+      border: 4px solid #000;
+      border-radius: 16px;
+      box-shadow: 6px 6px 0px #000;
+      transition: all 0.3s ease-in-out;
+    }
+    
+    /* Ensure dark text on light elements for contrast */
+    .text-outline {
+        text-shadow: 2px 2px #000;
+    }
+
+    /* Make the model viewer taller on large screens */
+    @media (min-width: 1024px) {
+      model-viewer {
+        height: 700px;
+      }
+    }
+
+    /* --- CUSTOM LOADER STYLES --- */
+    .boxes {
+      --size: 32px;
+      --duration: 800ms;
+      height: calc(var(--size) * 2);
+      width: calc(var(--size) * 3);
+      position: relative;
+      transform-style: preserve-3d;
+      transform-origin: 50% 50%;
+      margin-top: calc(var(--size) * 1.5 * -1);
+      /* Adjusted perspective view for better mobile visibility */
+      transform: rotateX(60deg) rotateZ(45deg) rotateY(0deg) translateZ(0px); 
+    }
+
+    .boxes .box {
+      width: var(--size);
+      height: var(--size);
+      top: 0;
+      left: 0;
+      position: absolute;
+      transform-style: preserve-3d;
+    }
+
+    .boxes .box:nth-child(1) {
+      transform: translate(100%, 0);
+      -webkit-animation: box1 var(--duration) linear infinite;
+      animation: box1 var(--duration) linear infinite;
+    }
+
+    .boxes .box:nth-child(2) {
+      transform: translate(0, 100%);
+      -webkit-animation: box2 var(--duration) linear infinite;
+      animation: box2 var(--duration) linear infinite;
+    }
+
+    .boxes .box:nth-child(3) {
+      transform: translate(100%, 100%);
+      -webkit-animation: box3 var(--duration) linear infinite;
+      animation: box3 var(--duration) linear infinite;
+    }
+
+    .boxes .box:nth-child(4) {
+      transform: translate(200%, 0);
+      -webkit-animation: box4 var(--duration) linear infinite;
+      animation: box4 var(--duration) linear infinite;
+    }
+
+    .boxes .box > div {
+      /* Use soft, whimsical colors for the cube faces */
+      --background: #FFD9EB; /* Soft Pink */
+      --top: auto;
+      --right: auto;
+      --bottom: auto;
+      --left: auto;
+      --translateZ: calc(var(--size) / 2);
+      --rotateY: 0deg;
+      --rotateX: 0deg;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: var(--background);
+      /* Add black border to cube faces for cartoon look */
+      border: 1px solid #000; 
+      top: var(--top);
+      right: var(--right);
+      bottom: var(--bottom);
+      left: var(--left);
+      transform: rotateY(var(--rotateY)) rotateX(var(--rotateX)) translateZ(var(--translateZ));
+    }
+
+    .boxes .box > div:nth-child(1) {
+      --background: #D9F7FF; /* Soft Blue */
+      --top: 0;
+      --left: 0;
+    }
+
+    .boxes .box > div:nth-child(2) {
+      --background: #FFD9EB; /* Soft Pink */
+      --right: 0;
+      --rotateY: 90deg;
+    }
+
+    .boxes .box > div:nth-child(3) {
+      --background: #FFEC9C; /* Accent Yellow */
+      --rotateX: -90deg;
+    }
+
+    .boxes .box > div:nth-child(4) {
+      --background: #FFFFFF; /* White */
+      --top: 0;
+      --left: 0;
+      --translateZ: calc(var(--size) * 3 * -1);
+    }
+
+    /* Keyframes remain as provided */
+    @-webkit-keyframes box1 {
+      0%, 50% { transform: translate(100%, 0); }
+      100% { transform: translate(200%, 0); }
+    }
+    @keyframes box1 {
+      0%, 50% { transform: translate(100%, 0); }
+      100% { transform: translate(200%, 0); }
+    }
+    @-webkit-keyframes box2 {
+      0% { transform: translate(0, 100%); }
+      50% { transform: translate(0, 0); }
+      100% { transform: translate(100%, 0); }
+    }
+    @keyframes box2 {
+      0% { transform: translate(0, 100%); }
+      50% { transform: translate(0, 0); }
+      100% { transform: translate(100%, 0); }
+    }
+    @-webkit-keyframes box3 {
+      0%, 50% { transform: translate(100%, 100%); }
+      100% { transform: translate(0, 100%); }
+    }
+    @keyframes box3 {
+      0%, 50% { transform: translate(100%, 100%); }
+      100% { transform: translate(0, 100%); }
+    }
+    @-webkit-keyframes box4 {
+      0% { transform: translate(200%, 0); }
+      50% { transform: translate(200%, 100%); }
+      100% { transform: translate(100%, 100%); }
+    }
+    @keyframes box4 {
+      0% { transform: translate(200%, 0); }
+      50% { transform: translate(200%, 100%); }
+      100% { transform: translate(100%, 100%); }
+    }
+    /* --- END CUSTOM LOADER STYLES --- */
+  </style>
+
+  <!-- Tailwind Configuration for Cartoon Pastel Theme -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'soft-blue': '#D9F7FF', /* Light Cyan/Blue background */
+            'soft-pink': '#FFD9EB', /* Light Pink card background */
+            'accent-yellow': '#FFEC9C', /* Yellow for buttons/highlights */
+            'outline-black': '#000000',
+            'text-dark': '#1F2937', /* Dark gray/black for readability */
+          },
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-soft-blue text-text-dark min-h-screen">
+
+  <!-- Friendly Header & Navigation -->
+  <header class="p-4 sm:p-6 bg-accent-yellow cartoon-card sticky top-4 z-10 w-[95%] mx-auto mt-4 transform translate-x-0 translate-y-0">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <h1 class="text-3xl font-extrabold tracking-tight">
+        ✨ 3D Toybox
+      </h1>
+      
+      <!-- Desktop Navigation -->
+      <nav class="space-x-6 text-xl font-bold hidden sm:flex">
+        <a href="#viewer" class="hover:text-soft-pink transition duration-200">View</a>
+        <a href="#about" class="hover:text-soft-pink transition duration-200">About</a>
+        <a href="#workflow" class="hover:text-soft-pink transition duration-200">Process</a>
+      </nav>
+      <!-- Mobile Placeholder -->
+      <div class="sm:hidden text-lg font-bold">MENU</div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto p-4 lg:p-12">
+
+    <!-- Hero Section: Fun and Whimsical -->
+    <section class="text-center py-16 lg:py-24 space-y-4">
+      <p class="text-2xl font-bold uppercase tracking-widest">
+        Welcome to the playground!
+      </p>
+      <h2 class="text-6xl md:text-8xl lg:text-9xl font-black leading-none tracking-tighter text-outline">
+        <span class="text-soft-pink">CARTOON</span> RENDER.
+      </h2>
+      <p class="text-xl text-text-dark max-w-4xl mx-auto pt-4">
+        Everything here is built with smiles and geometry! Spin our playful model, explore the concepts, and see how simple shapes become amazing digital art.
+      </p>
+      
+      <a href="#viewer" class="inline-block mt-6">
+        <button class="bg-soft-pink text-text-dark font-black text-xl py-3 px-8 rounded-xl cartoon-card active:translate-y-1 active:box-shadow-none transition duration-150">
+            Spin the Model! 🚀
+        </button>
+      </a>
+    </section>
+
+    <!-- 3D Model Viewer Section -->
+    <section id="viewer" class="py-12 lg:py-16">
+      <div class="p-6 md:p-10 bg-soft-pink cartoon-card">
+        
+        <h3 class="text-3xl font-bold mb-6 text-center">Our Star Model</h3>
+        
+        <!-- The Model Viewer Component (Styling handled in <style> block) -->
+        <model-viewer 
+          id="model-viewer"
+          src="car.glb" 
+          alt="Concept Car 3D Model" 
+          auto-rotate 
+          camera-controls 
+          shadow-intensity="1.5"
+          exposure="1.0"
+          style="--color-main: #FFEC9C; --color-accent: #FFD9EB;"
+          loading="lazy"
+          reveal="auto">
+          
+          <!-- The Custom Loader is placed here in the 'poster' slot -->
+          <div slot="poster" class="flex flex-col justify-center items-center w-full h-full bg-accent-yellow rounded-md space-y-4">
+            
+            <div class="boxes">
+                <div class="box">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="box">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="box">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="box">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+            
+            <span class="text-xl font-black text-text-dark">Loading 3d Element...</span>
+          </div>
+          <!-- End Custom Loader -->
+
+        </model-viewer>
+        
+        <div class="mt-6 text-center text-text-dark">
+          <p class="text-xl font-bold tracking-wide">The Speedy Car!</p>
+          <p class="text-base mt-1">Gently touch or drag to spin it yourself. It's safe for digital fun!</p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- About & Workflow Sections -->
+    <section id="about" class="py-12 lg:py-24">
+      <h3 class="text-4xl font-black text-center mb-12 text-outline">Let's Get Geometrical!</h3>
+      <div class="grid lg:grid-cols-2 gap-8">
+          
+          <div class="bg-accent-yellow p-8 cartoon-card">
+            <p class="text-3xl font-bold mb-4">What's the Big Deal with 3D?</p>
+            <p class="mb-4">
+              3D art is like digital sculpting! Instead of drawing on a flat paper, we build shapes in a digital space using meshes and volumes. It's the magic behind every cartoon, cool visual effect, and silly video game character you love.
+            </p>
+            <p>
+              It requires <strong class="font-extrabold">imagination and math</strong>, but the results are totally worth it! We craft models vertex by vertex and then give them colorful textures and light them up.
+            </p>
+          </div>
+          
+          <div id="workflow" class="bg-soft-pink p-8 cartoon-card">
+            <p class="text-3xl font-bold mb-4">The Creation Process</p>
+            <ul class="space-y-4 list-none">
+              <li>
+                <span class="font-extrabold text-xl block">✏️ 1. Modeling Time:</span>
+                Making the basic shape! We either sculpt it like clay or build it piece by piece, like digital LEGOs.
+              </li>
+              <li>
+                <span class="font-extrabold text-xl block">🎨 2. Coloring Fun:</span>
+                Adding surface details, roughness, and all the properties that make it look shiny or fuzzy.
+              </li>
+              <li>
+                <span class="font-extrabold text-xl block">💡 3. Light, Camera, Action!</span>
+                Setting up virtual spotlights and cameras to make the scene pop and look extra cool before we take a picture.
+              </li>
+              <li>
+                <span class="font-extrabold text-xl block">🖼️ 4. Final Render:</span>
+                The computer does the heavy lifting, calculating the final, high-quality image from all the 3D data. Voilà!
+              </li>
+            </ul>
+          </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center py-12 mt-20 border-t-4 border-black">
+      <p class="text-text-dark text-lg font-bold">&copy; 2025 By <a href="https://sitecraftco.site">Sitecraft Co</a></p>
+    </footer>
+
+  </main>
+
+  <script>
+    // WebGL detection and error handling
+    (function() {
+      // Check WebGL support
+      function hasWebGL() {
+        try {
+          const canvas = document.createElement('canvas');
+          const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+          return !!gl;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      if (!hasWebGL()) {
+        console.error('WebGL is not supported in this browser');
+        const viewer = document.getElementById('model-viewer');
+        if (viewer) {
+          viewer.style.display = 'none';
+          const container = viewer.parentElement;
+          const errorMsg = document.createElement('div');
+          errorMsg.className = 'text-center p-8 bg-red-100 border-4 border-red-500 rounded-lg';
+          errorMsg.innerHTML = '<p class="text-xl font-bold text-red-800">WebGL is not supported in your browser. Please enable WebGL or use a different browser.</p>';
+          container.appendChild(errorMsg);
+        }
+      }
+
+      // Handle model loading errors
+      document.addEventListener('DOMContentLoaded', function() {
+        const modelViewer = document.getElementById('model-viewer');
+        if (modelViewer) {
+          modelViewer.addEventListener('error', function(event) {
+            console.error('Model loading error:', event.detail);
+            // Try fallback URL if local file fails
+            if (modelViewer.src === 'car.glb' || modelViewer.src.endsWith('car.glb')) {
+              console.log('Trying fallback URL...');
+              modelViewer.src = 'https://raw.githubusercontent.com/Site-Craft/test/main/car.glb';
+            }
+          });
+
+          modelViewer.addEventListener('load', function() {
+            console.log('Model loaded successfully');
+          });
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
+

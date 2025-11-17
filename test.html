@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Model Viewer</title>
+  <!-- Import model-viewer -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    model-viewer {
+      width: 600px;
+      height: 400px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <model-viewer id="model-viewer"
+                src="car.glb" 
+                alt="3D Car Model" 
+                auto-rotate 
+                camera-controls 
+                shadow-intensity="1"
+                reveal="auto">
+  </model-viewer>
+
+  <script>
+    // WebGL detection and error handling
+    (function() {
+      // Check WebGL support
+      function hasWebGL() {
+        try {
+          const canvas = document.createElement('canvas');
+          const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+          return !!gl;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      if (!hasWebGL()) {
+        console.error('WebGL is not supported in this browser');
+        const viewer = document.getElementById('model-viewer');
+        if (viewer) {
+          viewer.style.display = 'none';
+          const errorMsg = document.createElement('div');
+          errorMsg.style.cssText = 'text-align: center; padding: 20px; background: #fee; border: 2px solid #f00; border-radius: 10px; color: #c00;';
+          errorMsg.innerHTML = '<p><strong>WebGL is not supported in your browser.</strong><br>Please enable WebGL or use a different browser.</p>';
+          document.body.appendChild(errorMsg);
+        }
+      }
+
+      // Handle model loading errors
+      document.addEventListener('DOMContentLoaded', function() {
+        const modelViewer = document.getElementById('model-viewer');
+        if (modelViewer) {
+          modelViewer.addEventListener('error', function(event) {
+            console.error('Model loading error:', event.detail);
+            // Try fallback URL if local file fails
+            if (modelViewer.src === 'car.glb' || modelViewer.src.endsWith('car.glb')) {
+              console.log('Trying fallback URL...');
+              modelViewer.src = 'https://raw.githubusercontent.com/Site-Craft/test/main/car.glb';
+            }
+          });
+
+          modelViewer.addEventListener('load', function() {
+            console.log('Model loaded successfully');
+          });
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>
